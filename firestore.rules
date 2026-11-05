@@ -1,0 +1,158 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() { return request.auth != null; }
+    
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isVerifiedUser() && request.auth.uid == userId;
+    }
+    
+    function isBootstrappedSuperAdmin() { return isSignedIn() && request.auth.token.email == 'lgzal2027@gmail.com'; }
+    
+    function isSuperAdmin() {
+      return isBootstrappedSuperAdmin() || (
+        isVerifiedUser() &&
+        exists(/databases/$(database)/documents/staff_roles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/staff_roles/$(request.auth.uid)).data.role == 'super_admin'
+      );
+    }
+
+    function isModerator() { return isSuperAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/staff_roles/$(request.auth.uid)) && get(/databases/$(database)/documents/staff_roles/$(request.auth.uid)).data.role == 'moderator'); }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll([
+        'uid', 'displayName', 'gender', 'countryCode', 'cityName',
+        'role', 'accountStatus', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.uid) &&
+      data.displayName is string && data.displayName.size() >= 2 && data.displayName.size() <= 80 &&
+      data.gender is string && data.gender in ['male', 'female', 'unspecified'] &&
+      data.countryCode is string && data.countryCode.size() >= 2 && data.countryCode.size() <= 10 &&
+      data.cityName is string && data.cityName.size() >= 1 && data.cityName.size() <= 80 &&
+      data.role is string && data.role in ['user', 'moderator', 'super_admin'] &&
+      data.accountStatus is string && data.accountStatus in ['active', 'suspended', 'restricted', 'banned'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidMarriageAd(data) {
+      return data.keys().hasAll([
+        'adId', 'userId', 'advertiserName', 'title', 'gender', 'age', 'status',
+        'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.adId) &&
+      isValidId(data.userId) &&
+      data.userId == request.auth.uid &&
+      data.advertiserName is string && data.advertiserName.size() >= 2 && data.advertiserName.size() <= 80 &&
+      data.title is string && data.title.size() >= 2 && data.title.size() <= 140 &&
+      data.gender is string && data.gender in ['male', 'female'] &&
+      data.age is int && data.age >= 18 && data.age <= 99 &&
+      data.status is string && data.status in ['pending', 'approved', 'rejected', 'archived'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+    
+    function isValidUiConfigSettings(data) {
+      return data.keys().hasAll(['configId', 'bannerEnabled', 'updatedAt']) &&
+      isValidId(data.configId) &&
+      data.updatedAt is timestamp;
+    }
+
+    match /support_tickets/{ticketId} {
+      allow get, list: if isBootstrappedSuperAdmin() || isModerator() || (isSignedIn() && existing().userId == request.auth.uid);
+      allow create: if isValidId(ticketId) && incoming().status == 'new' && incoming().createdAt == request.time;
+      allow update: if isModerator() || (isOwner(existing().userId) && incoming().status == existing().status);
+      allow delete: if isSuperAdmin();
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isModerator());
+      allow list: if isSuperAdmin() || (isVerifiedUser() && resource.data.uid == request.auth.uid);
+      allow create: if isOwner(userId) && isValidUserProfile(incoming());
+      allow update: if (isOwner(userId) || isSuperAdmin()) && isValidUserProfile(incoming());
+    }
+
+    match /ads/{adId} {
+      allow get: if isValidId(adId) && (existing().status == 'approved' || isOwner(existing().userId) || isModerator());
+      allow list: if resource.data.status == 'approved' || (isSignedIn() && resource.data.userId == request.auth.uid) || isModerator();
+      allow create: if isVerifiedUser() && isValidMarriageAd(incoming());
+      allow update: if (isOwner(existing().userId) && isValidMarriageAd(incoming())) || isModerator();
+    }
+
+    match /ui_settings/{configId} {
+      allow get: if true;
+      allow list: if isSuperAdmin();
+      allow create, update: if isSuperAdmin() && isValidUiConfigSettings(incoming());
+    }
+
+    match /user_private/{userId} {
+      allow get: if isOwner(userId) || isModerator();
+      allow create, update: if isOwner(userId) && incoming().uid == userId;
+    }
+
+    match /ad_photos/{photoId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    match /ad_contacts/{adId} {
+      allow get: if isOwner(existing().userId) || isModerator() || exists(/databases/$(database)/documents/contact_access/$(adId + '_' + request.auth.uid));
+      allow list: if false;
+      allow create, update: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow delete: if isOwner(existing().userId) || isSuperAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow get: if isOwner(existing().userId) || isModerator();
+      allow list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isSuperAdmin();
+      allow create: if isVerifiedUser() && incoming().userId == request.auth.uid && incoming().status in ['unpaid', 'processing', 'pending'];
+      allow update: if isModerator() || (isOwner(existing().userId) && existing().status in ['unpaid', 'processing'] && incoming().status == existing().status);
+      allow delete: if isSuperAdmin();
+    }
+
+    match /contact_access/{accessId} {
+      allow get, list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isModerator();
+      allow create, update: if isModerator();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /admin_settings/{settingKey} {
+      allow get: if true;
+      allow create, update: if isSuperAdmin();
+    }
+
+    match /admin_audit_logs/{logId} {
+      allow get, list, create: if isModerator();
+      allow update, delete: if false;
+    }
+
+    match /staff_roles/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isModerator());
+      allow list: if isBootstrappedSuperAdmin() || isModerator();
+      allow create, update, delete: if isSuperAdmin();
+    }
+  }
+}
+

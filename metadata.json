@@ -1,0 +1,6 @@
+{
+  "name": "منصة زواج المسيار",
+  "description": "منصة متكاملة لإعلانات الزواج والتوفيق الشرعي مع لوحة تحكم إدارية لتخصيص المظهر وتصميم بطاقات الإعلانات.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

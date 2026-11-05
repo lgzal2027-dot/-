@@ -1,0 +1,1165 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public and general user account data and current role status.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name or nickname in Arabic or English.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "gender": {
+          "type": "string",
+          "description": "User gender.",
+          "enum": ["male", "female", "unspecified"]
+        },
+        "countryCode": {
+          "type": "string",
+          "description": "ISO country code (focus on Gulf and Arab countries).",
+          "minLength": 2,
+          "maxLength": 10
+        },
+        "cityName": {
+          "type": "string",
+          "description": "City name.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "role": {
+          "type": "string",
+          "description": "System role: regular user, moderator, or super admin.",
+          "enum": ["user", "moderator", "super_admin"]
+        },
+        "accountStatus": {
+          "type": "string",
+          "description": "Account moderation state.",
+          "enum": ["active", "suspended", "restricted", "banned"]
+        },
+        "restrictionReason": {
+          "type": "string",
+          "description": "Reason for temporary account restriction.",
+          "maxLength": 500
+        },
+        "restrictionUntil": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp until which the restriction is active."
+        },
+        "bannedReason": {
+          "type": "string",
+          "description": "Reason for account ban.",
+          "maxLength": 500
+        },
+        "bannedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when account was banned."
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "description": "Whether user email is verified."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 150,
+          "description": "User email address."
+        },
+        "adsCount": {
+          "type": "integer",
+          "description": "Total number of ads created by this user."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "gender",
+        "countryCode",
+        "cityName",
+        "role",
+        "accountStatus",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivate": {
+      "title": "UserPrivate",
+      "description": "Isolated PII data for a user account (email, phone, private notes).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "phone", "updatedAt"]
+    },
+    "StaffRole": {
+      "title": "StaffRole",
+      "description": "Authoritative RBAC record assigning moderator or super_admin permissions.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 150
+        },
+        "role": {
+          "type": "string",
+          "enum": ["moderator", "super_admin"]
+        },
+        "assignedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "role", "assignedBy", "createdAt", "updatedAt"]
+    },
+    "MarriageAd": {
+      "title": "MarriageAd",
+      "description": "Misyar marriage advertisement public listing without raw contact PII.",
+      "type": "object",
+      "properties": {
+        "adId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "advertiserName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["male", "female"]
+        },
+        "age": {
+          "type": "number",
+          "description": "Adult age between 18 and 99."
+        },
+        "maritalStatus": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "marriageType": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "countryCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 10
+        },
+        "countryNameAr": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "countryNameEn": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "regionId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "regionLabelAr": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "regionNameAr": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "subRegionId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "subRegionLabelAr": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "subRegionNameAr": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "cityNameAr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "cityNameEn": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "details": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "partnerRequirements": {
+          "type": "string",
+          "maxLength": 1500
+        },
+        "hasPhotos": {
+          "type": "boolean"
+        },
+        "primaryPhotoUrl": {
+          "type": "string",
+          "maxLength": 350000
+        },
+        "photoFileId": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "contactChannelsSummary": {
+          "type": "array",
+          "description": "Enabled contact channel types for this ad (whatsapp, calls, snapchat, x)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected", "archived"]
+        },
+        "reviewStatus": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "moderationNote": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "viewsCount": {
+          "type": "number",
+          "description": "Total number of ad detail views."
+        },
+        "sharesCount": {
+          "type": "number",
+          "description": "Total number of ad shares."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "adId",
+        "userId",
+        "advertiserName",
+        "title",
+        "gender",
+        "age",
+        "maritalStatus",
+        "marriageType",
+        "countryCode",
+        "countryNameAr",
+        "countryNameEn",
+        "regionId",
+        "regionLabelAr",
+        "regionNameAr",
+        "subRegionId",
+        "subRegionLabelAr",
+        "subRegionNameAr",
+        "cityNameAr",
+        "cityNameEn",
+        "details",
+        "partnerRequirements",
+        "hasPhotos",
+        "primaryPhotoUrl",
+        "photoFileId",
+        "contactChannelsSummary",
+        "status",
+        "reviewStatus",
+        "moderationNote",
+        "viewsCount",
+        "sharesCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdPhoto": {
+      "title": "AdPhoto",
+      "description": "Metadata and access rules for photos linked to marriage ads.",
+      "type": "object",
+      "properties": {
+        "photoId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "storagePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 350000
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "authorized_only", "private"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "photoId",
+        "adId",
+        "userId",
+        "storagePath",
+        "url",
+        "visibility",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdContact": {
+      "title": "AdContact",
+      "description": "Protected contact methods for an advertisement (WhatsApp, Snapchat, X), isolated from public ad reads.",
+      "type": "object",
+      "properties": {
+        "adId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "whatsapp": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "whatsappDialCode": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "whatsappAcceptsCalls": {
+          "type": "boolean"
+        },
+        "snapchatUrl": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "xUrl": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "telegram": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "preferredContactTime": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "adId",
+        "userId",
+        "phone",
+        "whatsapp",
+        "whatsappDialCode",
+        "whatsappAcceptsCalls",
+        "snapchatUrl",
+        "xUrl",
+        "telegram",
+        "email",
+        "preferredContactTime",
+        "updatedAt"
+      ]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Payment transaction record for unlocking contact info or ad services.",
+      "type": "object",
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "targetAdId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": ["unlock_contact", "timed_access", "featured_ad", "subscription"]
+        },
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 10
+        },
+        "method": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "referenceNumber": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "receiptUrl": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "unpaid",
+            "processing",
+            "succeeded",
+            "failed",
+            "refunded",
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "reviewedBy": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "paymentId",
+        "userId",
+        "targetAdId",
+        "purpose",
+        "amount",
+        "currency",
+        "method",
+        "referenceNumber",
+        "receiptUrl",
+        "status",
+        "reviewedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ContactAccessGrant": {
+      "title": "ContactAccessGrant",
+      "description": "Authorization record granting a visitor/user access to an ad's contact methods after payment/verification.",
+      "type": "object",
+      "properties": {
+        "accessId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "paymentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "revoked"]
+        },
+        "grantedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "accessId",
+        "adId",
+        "userId",
+        "paymentId",
+        "status",
+        "grantedBy",
+        "createdAt"
+      ]
+    },
+    "AdminSettings": {
+      "title": "AdminSettings",
+      "description": "Global platform configuration managed by the Super Admin.",
+      "type": "object",
+      "properties": {
+        "settingKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "platformEnabled": {
+          "type": "boolean"
+        },
+        "requireAdApproval": {
+          "type": "boolean"
+        },
+        "requirePhotoApproval": {
+          "type": "boolean"
+        },
+        "contactUnlockFee": {
+          "type": "number"
+        },
+        "defaultCurrency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 10
+        },
+        "supportWhatsapp": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "settingKey",
+        "platformEnabled",
+        "requireAdApproval",
+        "requirePhotoApproval",
+        "contactUnlockFee",
+        "defaultCurrency",
+        "supportWhatsapp",
+        "updatedBy",
+        "updatedAt"
+      ]
+    },
+    "UiConfigSettings": {
+      "title": "UiConfigSettings",
+      "description": "Dynamic UI configuration for the main screen banner, news ticker, ad cards, marriage types, and customer service channels.",
+      "type": "object",
+      "properties": {
+        "configId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "bannerEnabled": {
+          "type": "boolean"
+        },
+        "bannerImage1Url": {
+          "type": "string",
+          "maxLength": 250000
+        },
+        "bannerImage2Url": {
+          "type": "string",
+          "maxLength": 250000
+        },
+        "bannerOrder": {
+          "type": "string",
+          "enum": ["1_then_2", "2_then_1"]
+        },
+        "bannerIntervalSeconds": {
+          "type": "number"
+        },
+        "bannerSlot1Active": {
+          "type": "boolean"
+        },
+        "bannerSlot2Active": {
+          "type": "boolean"
+        },
+        "bannerImage1Link": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "bannerImage2Link": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "tickerEnabled": {
+          "type": "boolean"
+        },
+        "tickerText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "tickerFontSize": {
+          "type": "string",
+          "enum": ["sm", "base", "lg"]
+        },
+        "tickerDirection": {
+          "type": "string",
+          "enum": ["ltr", "rtl"]
+        },
+        "tickerTextColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "tickerBgColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "tickerSpeedSeconds": {
+          "type": "number"
+        },
+        "cardShape": {
+          "type": "string",
+          "enum": ["rounded", "soft", "sharp"]
+        },
+        "cardBgColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "cardBgImageUrl": {
+          "type": "string",
+          "maxLength": 250000
+        },
+        "cardBgOpacity": {
+          "type": "number"
+        },
+        "cardTextColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "cardSecondaryTextColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "cardFontSize": {
+          "type": "string",
+          "enum": ["sm", "base", "lg"]
+        },
+        "cardFontWeight": {
+          "type": "string",
+          "enum": ["normal", "medium", "bold"]
+        },
+        "cardBorderColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "cardBorderWidth": {
+          "type": "number"
+        },
+        "cardBorderStyle": {
+          "type": "string",
+          "enum": ["solid", "dashed", "double"]
+        },
+        "cardRadius": {
+          "type": "string",
+          "enum": ["none", "rounded", "soft", "pill"]
+        },
+        "cardPadding": {
+          "type": "string",
+          "enum": ["compact", "normal", "relaxed"]
+        },
+        "cardGap": {
+          "type": "string",
+          "enum": ["compact", "normal", "relaxed"]
+        },
+        "cardAccentColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "adsSortOrder": {
+          "type": "string",
+          "enum": ["newest", "oldest", "age_asc", "age_desc"]
+        },
+        "marriageTypes": {
+          "type": "array",
+          "description": "Admin-managed list of allowed marriage types."
+        },
+        "supportWhatsapp": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "supportPhone": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "supportTelegram": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "supportEmail": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "supportNote": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "appBgColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "appBgImageUrl": {
+          "type": "string",
+          "maxLength": 250000
+        },
+        "appBgImageFit": {
+          "type": "string",
+          "enum": ["cover", "contain", "repeat"]
+        },
+        "appBgOverlayOpacity": {
+          "type": "number"
+        },
+        "appBgOverlayColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "disabledCountryCodes": {
+          "type": "array",
+          "description": "Country codes disabled by the Super Admin."
+        },
+        "customRegionsJson": {
+          "type": "string",
+          "maxLength": 50000
+        },
+        "paymentPolicyScope": {
+          "type": "string",
+          "enum": ["single_ad", "timed_access"]
+        },
+        "paymentMethodsNote": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "configId",
+        "bannerEnabled",
+        "bannerImage1Url",
+        "bannerImage2Url",
+        "bannerOrder",
+        "bannerIntervalSeconds",
+        "bannerSlot1Active",
+        "bannerSlot2Active",
+        "bannerImage1Link",
+        "bannerImage2Link",
+        "tickerEnabled",
+        "tickerText",
+        "tickerFontSize",
+        "tickerDirection",
+        "tickerTextColor",
+        "tickerBgColor",
+        "tickerSpeedSeconds",
+        "appBgColor",
+        "appBgImageUrl",
+        "appBgImageFit",
+        "appBgOverlayOpacity",
+        "appBgOverlayColor",
+        "cardShape",
+        "cardBgColor",
+        "cardBgImageUrl",
+        "cardBgOpacity",
+        "cardTextColor",
+        "cardSecondaryTextColor",
+        "cardFontSize",
+        "cardFontWeight",
+        "cardBorderColor",
+        "cardBorderWidth",
+        "cardBorderStyle",
+        "cardRadius",
+        "cardPadding",
+        "cardGap",
+        "cardAccentColor",
+        "adsSortOrder",
+        "marriageTypes",
+        "supportWhatsapp",
+        "supportPhone",
+        "supportTelegram",
+        "supportEmail",
+        "supportNote",
+        "disabledCountryCodes",
+        "customRegionsJson",
+        "paymentPolicyScope",
+        "paymentMethodsNote",
+        "updatedBy",
+        "updatedAt"
+      ]
+    },
+    "AdminAuditLog": {
+      "title": "AdminAuditLog",
+      "description": "Immutable administrative audit log of moderation actions, bans, suspensions, and ad deletions.",
+      "type": "object",
+      "properties": {
+        "logId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adminUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "adminEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 150
+        },
+        "actionType": {
+          "type": "string",
+          "enum": [
+            "ban_user",
+            "unban_user",
+            "restrict_user",
+            "unrestrict_user",
+            "approve_ad",
+            "reject_ad",
+            "pause_ad",
+            "resume_ad",
+            "delete_ad",
+            "delete_ad_photo",
+            "assign_role",
+            "revoke_role",
+            "update_settings"
+          ]
+        },
+        "targetType": {
+          "type": "string",
+          "enum": ["user", "ad", "staff", "settings"]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "targetName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "durationHours": {
+          "type": "integer"
+        },
+        "details": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "logId",
+        "adminUid",
+        "adminEmail",
+        "actionType",
+        "targetType",
+        "targetId",
+        "targetName",
+        "reason",
+        "durationHours",
+        "details",
+        "createdAt"
+      ]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer support tickets, reports, complaints, and inquiries submitted by users or visitors.",
+      "type": "object",
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "userDisplayName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "userEmail": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "userPhone": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "type": {
+          "type": "string",
+          "enum": ["inquiry", "complaint", "report_ad", "report_user", "auth_issue", "payment_issue"]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 150
+        },
+        "details": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 3000
+        },
+        "attachmentUrl": {
+          "type": "string",
+          "maxLength": 350000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["new", "in_progress", "resolved", "closed"]
+        },
+        "adminNote": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "replies": {
+          "type": "array"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ticketId",
+        "userId",
+        "userDisplayName",
+        "userEmail",
+        "type",
+        "subject",
+        "details",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Public/general user profile and role status."
+    },
+    "/user_private/{userId}": {
+      "schema": "UserPrivate",
+      "description": "Strictly isolated PII (email, phone) for each user."
+    },
+    "/staff_roles/{userId}": {
+      "schema": "StaffRole",
+      "description": "Trusted RBAC table assigning moderator and super_admin roles."
+    },
+    "/ads/{adId}": {
+      "schema": "MarriageAd",
+      "description": "Marriage advertisements without raw contact details."
+    },
+    "/ad_photos/{photoId}": {
+      "schema": "AdPhoto",
+      "description": "Photo records associated with marriage ads."
+    },
+    "/ad_contacts/{adId}": {
+      "schema": "AdContact",
+      "description": "Isolated contact details for each ad, accessible only to owner, staff, or authorized payers."
+    },
+    "/payments/{paymentId}": {
+      "schema": "PaymentRecord",
+      "description": "Payment records submitted by users and reviewed by staff."
+    },
+    "/contact_access/{accessId}": {
+      "schema": "ContactAccessGrant",
+      "description": "Verified access grants allowing a user to read an ad's contact methods."
+    },
+    "/admin_settings/{settingKey}": {
+      "schema": "AdminSettings",
+      "description": "Global platform configuration controlled by the Super Admin."
+    },
+    "/ui_settings/{configId}": {
+      "schema": "UiConfigSettings",
+      "description": "Dynamic UI settings for top banner, news ticker, ad cards, marriage types, and customer service."
+    },
+    "/admin_audit_logs/{logId}": {
+      "schema": "AdminAuditLog",
+      "description": "Audit trails for moderation actions, bans, and ad reviews."
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Customer support tickets, reports, complaints, and inquiries submitted by users or visitors."
+    }
+  }
+}
